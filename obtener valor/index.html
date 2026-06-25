@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Tasa Automática</title>
+    <style>
+        body { background: #020208; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
+        button { background: #00d2ff; border: none; padding: 12px 24px; font-weight: bold; cursor: pointer; border-radius: 8px; }
+        #resultado { margin-top: 20px; font-size: 24px; color: #00ffaa; }
+    </style>
+</head>
+<body>
+
+    <h1>Prueba de Conexión Serverless</h1>
+    <p>Presiona el botón para intentar traer el dólar en tiempo real desde alcambio.app</p>
+    
+    <button onclick="probarTasa()">Consultar Dólar Automático</button>
+    
+    <div id="resultado">Esperando consulta...</div>
+
+    <script>
+        async function probarTasa() {
+            const divResultado = document.getElementById('resultado');
+            divResultado.innerText = "Consultando al servidor de Netlify...";
+
+            try {
+                // Netlify expone las funciones automáticamente bajo la ruta /.netlify/functions/
+                const respuesta = await fetch('/.netlify/functions/obtener-tasa');
+                const datos = await respuesta.json();
+
+                if (datos.tasa) {
+                    divResultado.innerText = `¡Éxito! Tasa encontrada: Bs. ${datos.tasa}`;
+                } else {
+                    divResultado.innerText = "Error: El servidor no devolvió una tasa válida.";
+                }
+            } catch (error) {
+                divResultado.innerText = "Error al conectar con la Netlify Function.";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
